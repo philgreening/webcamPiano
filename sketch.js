@@ -84,10 +84,3 @@ function draw() {
 
     grid.run(diffImg);
 }
-
-// faster method for calculating color similarity which does not calculate root.
-// Only needed if dist() runs slow
-function distSquared(x1, y1, z1, x2, y2, z2){
-  var d = (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1);
-  return d;
-}
