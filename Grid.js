@@ -6,6 +6,9 @@ class Grid {
     this.noteSize = 40;
     this.notePos = [];
     this.noteState = [];
+    //arrays to hold notes
+    this.keys = [ 'C', 'D', 'E', 'F', 'G', 'A', 'B'];
+    this.octaves = [2, 3, 4,];
 
     // initalise grid structure and state
     for (var x=0;x<_w;x+=this.noteSize){
@@ -27,7 +30,6 @@ class Grid {
   }
   /////////////////////////////////
   drawActiveNotes(img){
-    // draw active notes
     fill(255);
     noStroke();
     for (var i=0;i<this.notePos.length;i++){
@@ -36,12 +38,23 @@ class Grid {
         var y = this.notePos[i][j].y;
         if (this.noteState[i][j]>0) {
           var alpha = this.noteState[i][j] * 200;
-          var c1 = color(255,0,0,alpha);
-          var c2 = color(0,255,0,alpha);
+          //noise and random used to randomise flashing colours
+          var n = noise(x,y);
+          var mapN = map(n, 0, 1, 0, 255);
+          var c1 = color(mapN,random(0,255),random(0,255),alpha);
+          var c2 = color(random(0,255),mapN, random(0.255),alpha);
           var mix = lerpColor(c1, c2, map(i, 0, this.notePos.length, 0, 1));
           fill(mix);
           var s = this.noteState[i][j];
-          ellipse(x, y, this.noteSize*s, this.noteSize*s);
+          //maps keys and octaves to x and y positions
+          var key = floor(map(x , 0, width/2, 0, this.keys.length ));
+          var octave = floor(map(y, 0, height, 0, this.octaves.length));
+          //builds note
+          var note = (this.keys[key] + this.octaves[octave]);
+          //Draws square and decays the size
+          square(x, y, this.noteSize*s);
+          //calls note to play
+          this.playNote(note);
         }
         this.noteState[i][j]-=0.05;
         this.noteState[i][j]=constrain(this.noteState[i][j],0,1);
@@ -64,5 +77,11 @@ class Grid {
             }
         }
     }
+  }
+  /////////////////////////////////
+  playNote(note){
+    //starts audio in browser
+    userStartAudio();
+    synth.play(note, 0.5, 0.1, 0.5);
   }
 }
